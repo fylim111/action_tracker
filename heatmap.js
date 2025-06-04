@@ -1,55 +1,52 @@
 // Wait for the page to fully load
 window.onload = () => {
-  // Load your activity data from JSON file
   fetch('heatmap_data.json')
     .then(res => res.json())
     .then(data => {
-      // Select the canvas element and define the viewing angle
       const canvas = document.getElementById('canvas');
-
-      // Create an isometric camera perspective
       const point = new obelisk.Point(600, 150);
-
-      // Set up the 3D pixel rendering engine
       const pixelView = new obelisk.PixelView(canvas, point);
 
-      // Define cube base size and spacing
       const cubeSize = 12;
       const spacing = 3;
 
-      // Loop through each activity data point
+      // Create shared base tile: height = 1, color = light grey
+      const baseDimension = new obelisk.CubeDimension(cubeSize, cubeSize, 1);
+      const baseColor = new obelisk.CubeColor().getByHorizontalColor(0x444444);
+
       data.forEach(item => {
         const value = item.value;
-        if (value === 0) return;
 
-        // Cube height and clamped max height
-        const h = value * 3;
-        const height = Math.min(h, 60);
-
-        // Green shade based on activity
-        const green = Math.max(0x003300, 0x00ff00 - value * 500);
-        const dimension = new obelisk.CubeDimension(cubeSize, cubeSize, height);
-        const color = new obelisk.CubeColor().getByHorizontalColor(green);
-        const cube = new obelisk.Cube(dimension, color);
-
-        // Position based on week and weekday
+        // Compute position
         const x = item.week * (cubeSize + spacing);
         const y = item.day * (cubeSize + spacing);
-        const p3d = new obelisk.Point3D(x, y, 0);
+        const basePos = new obelisk.Point3D(x, y, 0);
 
-        // Render the cube
-        pixelView.renderObject(cube, p3d);
+        // Always draw the grey floor tile
+        const baseCube = new obelisk.Cube(baseDimension, baseColor, false);
+        pixelView.renderObject(baseCube, basePos);
+
+        // Only draw activity cube if value > 0
+        if (value > 0) {
+          const h = value * 3;
+          const height = Math.min(h, 60);
+          const green = Math.max(0x003300, 0x00ff00 - value * 500);
+
+          const dimension = new obelisk.CubeDimension(cubeSize, cubeSize, height);
+          const color = new obelisk.CubeColor().getByHorizontalColor(green);
+          const cube = new obelisk.Cube(dimension, color);
+
+          // Draw the activity cube on top of the base tile
+          pixelView.renderObject(cube, basePos);
+        }
       });
 
-      // === ADD LABELS (HTML Overlay) ===
-
-      // Get the container for labels
+      // === OPTIONAL: Overlay labels (same as before, keep if working) ===
       const labelContainer = document.getElementById('labels');
       labelContainer.style.position = 'absolute';
       labelContainer.style.top = '0';
       labelContainer.style.left = '0';
 
-      // Add weekday labels (Mon–Sun)
       const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       days.forEach((day, i) => {
         const label = document.createElement('div');
@@ -63,7 +60,6 @@ window.onload = () => {
         labelContainer.appendChild(label);
       });
 
-      // Add week number labels (every 4 weeks)
       for (let w = 0; w <= 52; w += 4) {
         const label = document.createElement('div');
         label.textContent = `W${w}`;
