@@ -7,18 +7,47 @@
   <script src="https://unpkg.com/obelisk.js@1.2.2/build/obelisk.min.js"></script>
 
   <style>
-    body { background: #111; margin: 0; }
-    canvas { display: block; margin: auto; }
+    body {
+      background: #111;
+      margin: 0;
+      font-family: monospace;
+    }
+
+    #heatmap-wrapper {
+      position: relative;
+      width: 1000px;
+      height: 500px;
+      margin: auto;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #labels {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none; /* makes labels not block mouse */
+    }
+
+    #labels div {
+      position: absolute;
+      font-size: 11px;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
-  <div id="heatmap-wrapper" style="position: relative; width: 1000px; height: 500px;">
-  <canvas id="canvas" width="1000" height="500"></canvas>
-  <div id="labels"></div>
-</div>
 
+  <!-- 🔁 Wrapper for canvas + overlay labels -->
+  <div id="heatmap-wrapper">
+    <canvas id="canvas" width="1000" height="500"></canvas>
+    <div id="labels"></div>
+  </div>
 
-  <!-- ✅ Load after Obelisk is available -->
+  <!-- ✅ Heatmap logic -->
   <script src="heatmap.js"></script>
+
 </body>
 </html>
