@@ -43,7 +43,7 @@ df.set_index('date', inplace=True)
 
 # Fill in all days of the year
 year = df.index.min().year
-all_days = pd.date_range(start=f"{year}-01-01", end=f"{year}-12-31")
+all_days = pd.date_range(start=f"{year}-06-01", end=f"{year}-12-31")
 activity_series = df[activity].reindex(all_days, fill_value=0)
 
 # === PREPARE JSON OUTPUT (day=0-6, week=0-52)
