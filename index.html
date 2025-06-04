@@ -3,8 +3,8 @@
 <head>
   <title>3D Heatmap</title>
 
-  <!-- ✅ Working Obelisk.js CDN -->
-  <script src="https://unpkg.com/obelisk.js@1.0.3/build/obelisk.min.js"></script>
+  <!-- ✅ Correct version of Obelisk.js -->
+  <script src="https://unpkg.com/obelisk.js@1.0.2/build/obelisk.min.js"></script>
 
   <style>
     body { background: #111; margin: 0; }
@@ -13,8 +13,8 @@
 </head>
 <body>
   <canvas id="canvas" width="1000" height="500"></canvas>
-  <script> console.log("obelisk?", typeof obelisk); // should log "object" </script>
 
+  <!-- ✅ Load after Obelisk is available -->
   <script src="heatmap.js"></script>
 </body>
 </html>
