@@ -1,0 +1,38 @@
+name: Update heatmap_data.json from Google Sheets
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour — adjust as needed
+  workflow_dispatch:     # Allow manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install gspread oauth2client pandas
+
+      - name: Write creds.json from GitHub Secret
+        run: echo "$CREDS_JSON" > creds.json
+        env:
+          CREDS_JSON: ${{ secrets.CREDS_JSON }}
+
+      - name: Run update script
+        run: python update_heatmap.py
+
+      - name: Commit and push updated heatmap_data.json
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add heatmap_data.json
+          git commit -m "Update heatmap_data.json"
+          git push
