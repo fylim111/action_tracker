@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>3D Heatmap</title>
+  <title>3D Heatmap test</title>
+
+  <!-- ✅ Load Obelisk.js BEFORE your heatmap.js -->
   <script src="https://cdn.jsdelivr.net/npm/obelisk.js@1.0.3/build/obelisk.min.js"></script>
+
   <style>
     body { background: #111; margin: 0; }
     canvas { display: block; margin: auto; }
   </style>
 </head>
 <body>
+
+  <!-- ✅ Your canvas for drawing -->
   <canvas id="canvas" width="1000" height="500"></canvas>
+
+  <!-- ✅ Now load your JS that uses obelisk -->
   <script src="heatmap.js"></script>
+
 </body>
 </html>
