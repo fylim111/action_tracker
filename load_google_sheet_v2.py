@@ -49,16 +49,21 @@ activity_series = df[activity].reindex(all_days, fill_value=0)
 # === PREPARE JSON OUTPUT (day=0-6, week=0-52)
 json_output = []
 
-for d,value in activity_series.items():
-    week = d.isocalendar().week
+for d, value in activity_series.items():
+    # Correct way to extract ISO week number
+    week = d.isocalendar()[1]
     day = d.weekday()
+
+    # Fix edge case where Jan 1–3 sometimes gets week 52/53 of previous year
     if d.month == 1 and week > 50:
         week = 0
+
     json_output.append({
         "day": day,
         "week": week,
         "value": int(value)
     })
+
 
 # save to json file
 with open("heatmap_data.json", "w") as f:
