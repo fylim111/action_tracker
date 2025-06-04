@@ -8,46 +8,72 @@ window.onload = () => {
       const canvas = document.getElementById('canvas');
 
       // Create an isometric camera perspective
-      // Higher X → rotate left/right, higher Y → look from above
       const point = new obelisk.Point(600, 150);
 
       // Set up the 3D pixel rendering engine
       const pixelView = new obelisk.PixelView(canvas, point);
 
       // Define cube base size and spacing
-      const cubeSize = 12;       // Width and depth of each cube
-      const spacing = 3;         // Padding between cubes
+      const cubeSize = 12;
+      const spacing = 3;
 
       // Loop through each activity data point
       data.forEach(item => {
-        const value = item.value;      // Activity intensity
-        if (value === 0) return;       // Skip blank days (no cube)
+        const value = item.value;
+        if (value === 0) return;
 
-        // Determine height of cube (scale by value)
+        // Cube height and clamped max height
         const h = value * 3;
-        const height = Math.min(h, 60);  // Optional: limit height for readability
+        const height = Math.min(h, 60);
 
-        // Color logic: shade of green (less activity = lighter green)
+        // Green shade based on activity
         const green = Math.max(0x003300, 0x00ff00 - value * 500);
-
-        // Define cube size and height
         const dimension = new obelisk.CubeDimension(cubeSize, cubeSize, height);
-
-        // Define cube color using horizontal shading
         const color = new obelisk.CubeColor().getByHorizontalColor(green);
-
-        // Create the cube
         const cube = new obelisk.Cube(dimension, color);
 
-        // Position the cube on a 3D grid:
-        //  - X axis = weeks (left to right)
-        //  - Y axis = day of week (top to bottom)
+        // Position based on week and weekday
         const x = item.week * (cubeSize + spacing);
         const y = item.day * (cubeSize + spacing);
-        const p3d = new obelisk.Point3D(x, y, 0);  // (X, Y, Z=0)
+        const p3d = new obelisk.Point3D(x, y, 0);
 
-        // Draw the cube at the computed location
+        // Render the cube
         pixelView.renderObject(cube, p3d);
       });
+
+      // === ADD LABELS (HTML Overlay) ===
+
+      // Get the container for labels
+      const labelContainer = document.getElementById('labels');
+      labelContainer.style.position = 'absolute';
+      labelContainer.style.top = '0';
+      labelContainer.style.left = '0';
+
+      // Add weekday labels (Mon–Sun)
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      days.forEach((day, i) => {
+        const label = document.createElement('div');
+        label.textContent = day;
+        label.style.position = 'absolute';
+        label.style.top = `${i * (cubeSize + spacing) + 80}px`;
+        label.style.left = `5px`;
+        label.style.fontSize = '11px';
+        label.style.color = '#ccc';
+        label.style.fontFamily = 'monospace';
+        labelContainer.appendChild(label);
+      });
+
+      // Add week number labels (every 4 weeks)
+      for (let w = 0; w <= 52; w += 4) {
+        const label = document.createElement('div');
+        label.textContent = `W${w}`;
+        label.style.position = 'absolute';
+        label.style.top = `5px`;
+        label.style.left = `${w * (cubeSize + spacing) + 40}px`;
+        label.style.fontSize = '11px';
+        label.style.color = '#ccc';
+        label.style.fontFamily = 'monospace';
+        labelContainer.appendChild(label);
+      }
     });
 };
